@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "alwaysStrict": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "strict": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "declaration": true,
+        "strictPropertyInitialization": true,
+        "importHelpers": true,
+        "moduleResolution": "node",
+        "target": "es6"
+    },
+    "include": ["gulpfile.ts"]
+}
