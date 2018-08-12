@@ -182,6 +182,7 @@ export class Collection<TItem> {
     public enumerate(enumerator: Enumerator<TItem, void>): void {
         for (let index = this.firstIndex; index <= this.lastIndex; index++) {
             if (index in this) {
+                // tslint:disable-next-line:no-void-expression
                 const result = enumerator(<TItem>this[index], index, this);
 
                 if (result === BREAK) {
@@ -194,6 +195,7 @@ export class Collection<TItem> {
     public enumerateReverse(enumerator: Enumerator<TItem, void>): void {
         for (let index = this.lastIndex; index >= this.firstIndex; index--) {
             if (index in this) {
+                // tslint:disable-next-line:no-void-expression
                 const result = enumerator(<TItem>this[index], index, this);
 
                 if (result === BREAK) {

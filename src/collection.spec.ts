@@ -1,9 +1,6 @@
-import { Any, createFunctionSpy, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
+import { Any, createFunctionSpy, Expect, Test, TestCase, TestFixture } from 'alsatian';
 import { Customiser, Filter } from './';
-import { Collection, Dictionary, Enumerator, Finder } from './collection';
-
-// tslint:disable-next-line:no-any
-const REMOVED: any = {};
+import { Collection, Dictionary, Finder } from './collection';
 
 function createTestingCollection<T>(definition: Dictionary<T>, firstIndex?: number, lastIndex?: number) {
     const collection = new Collection();
@@ -239,7 +236,7 @@ export class CollectionTests {
     }
 
     @TestCase(['a', 'b', 'c'], ['a', 'b', 'c'])
-    @TestCase(['a', 'b', 'c'], ['a1', 'b1', 'c1'], (item: string) => item + 1)
+    @TestCase(['a', 'b', 'c'], ['a1', 'b1', 'c1'], (item: string) => `${item}1`)
     @Test('toArray() should return a new array version of a collection')
     public toArray1<T, R>(items: T[], expected: T[], customiser?: Customiser<T, R>) {
         const collection = new Collection<T>(items);
