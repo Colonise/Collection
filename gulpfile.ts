@@ -16,7 +16,7 @@ enum TestOutput {
     Coverage
 }
 
-@TSGulp.Project('DataSource')
+@TSGulp.Project('Collection')
 class GulpFile {
     public readonly tsProject = typescript.createProject('./src/tsconfig.json');
     public readonly tsLintProgram = TSlint.Linter.createProgram('./src/tsconfig.json');
