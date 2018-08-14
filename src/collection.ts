@@ -3,6 +3,7 @@ import { NonEnumerable } from './utils';
 export type Enumerator<TItem, TResult> = (item: TItem, index: number, collection: Collection<TItem>) => TResult;
 export type Filter<TItem> = Enumerator<TItem, boolean>;
 export type Remover<TItem> = Enumerator<TItem, boolean>;
+export type Replacer<TItem> = Enumerator<TItem, TItem>;
 export type Finder<TItem> = Enumerator<TItem, boolean>;
 export type Customiser<TItem, TResult> = Enumerator<TItem, TResult>;
 
@@ -129,6 +130,30 @@ export class Collection<TItem> {
 
             if (index !== undefined) {
                 this.remove(index);
+            }
+        }
+
+        return this;
+    }
+
+    public replace(item: TItem, replacement: TItem): Collection<TItem>;
+    public replace(index: number, replacement: TItem): Collection<TItem>;
+    public replace(replacer: Replacer<TItem>): Collection<TItem>;
+    public replace(
+        indexOrItemOrReplacer: TItem | number | Replacer<TItem>,
+        replacementOrUndefined?: TItem
+    ): Collection<TItem> {
+        if (typeof indexOrItemOrReplacer === 'number') {
+            this[indexOrItemOrReplacer] = replacementOrUndefined;
+        } else if (typeof indexOrItemOrReplacer === 'function') {
+            this.enumerate((item, index, collection) => {
+                this[index] = indexOrItemOrReplacer(item, index, collection);
+            });
+        } else {
+            const index = this.findIndex(indexOrItemOrReplacer);
+
+            if (index !== undefined) {
+                this.replace(index, <TItem>replacementOrUndefined);
             }
         }
 

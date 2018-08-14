@@ -1,6 +1,6 @@
 import { Any, createFunctionSpy, Expect, Test, TestCase, TestFixture } from 'alsatian';
 import { Customiser, Filter } from './';
-import { Collection, Dictionary, Finder } from './collection';
+import { Collection, Dictionary, Finder, Replacer } from './collection';
 
 function createTestingCollection<T>(definition: Dictionary<T>, firstIndex?: number, lastIndex?: number) {
     const collection = new Collection();
@@ -84,6 +84,36 @@ export class CollectionTests {
         const collection = new Collection<T>(items);
 
         collection.remove(index, count);
+
+        Expect(collection).toEqual(expected);
+    }
+
+    @TestCase(['a', 'b', 'c'], createTestingCollection({ '0': 'd', '1': 'b', '2': 'c' }), 'a', 'd')
+    @Test('remove(filter: Filter<TItem>) should replace an item in a collection with a replacement item')
+    public replace1<T>(items: T[], expected: Collection<T>, item: T, replacement: T) {
+        const collection = new Collection<T>(items);
+
+        collection.replace(item, replacement);
+
+        Expect(collection).toEqual(expected);
+    }
+
+    @TestCase(['a', 'b', 'c'], createTestingCollection({ '0': 'd', '1': 'b', '2': 'c' }), 0, 'd')
+    @Test('remove(filter: Filter<TItem>) should replace an item at an index in a collection with a replacement item')
+    public replace2<T>(items: T[], expected: Collection<T>, index: number, replacement: T) {
+        const collection = new Collection<T>(items);
+
+        collection.replace(index, replacement);
+
+        Expect(collection).toEqual(expected);
+    }
+
+    @TestCase(['a', 'b', 'c'], createTestingCollection({ '0': 'd', '1': 'd', '2': 'd' }), (item: string) => 'd')
+    @Test('remove(filter: Filter<TItem>) should replace all items in a collection using a replacer')
+    public replace3<T>(items: T[], expected: Collection<T>, replacer: Replacer<T>) {
+        const collection = new Collection<T>(items);
+
+        collection.replace(replacer);
 
         Expect(collection).toEqual(expected);
     }
