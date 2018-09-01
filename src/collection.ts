@@ -324,6 +324,20 @@ export class Collection<TItem> {
         return result;
     }
 
+    public all(filter: Filter<TItem> = (item: TItem) => !!item): boolean {
+        let result = true;
+
+        this.enumerate((item, index, collection) => {
+            if (!filter(item, index, collection)) {
+                result = false;
+
+                return this.BREAK;
+            }
+        });
+
+        return result;
+    }
+
     public toArray<TResult = TItem>(customiser?: Customiser<TItem, TResult>): TResult[] {
         const result: TResult[] = [];
 
