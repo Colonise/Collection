@@ -353,7 +353,7 @@ export class CollectionTests {
 
     @TestCase(['a', 'b', 'c'], ['a', 'b', 'c'])
     @Test('[Symbol.iterator]() should return an iterator')
-    public symbolIterator1<T, R>(items: T[], expected: T[]) {
+    public symbolIterator1<T>(items: T[], expected: T[]) {
         const collection = new Collection<T>(items);
 
         // tslint:disable-next-line:no-any
