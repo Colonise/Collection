@@ -1,4 +1,4 @@
-import { NonEnumerable } from './utils';
+import { makeNonEnumerable } from './utils';
 
 export type Enumerator<TItem, TResult> = (item: TItem, index: number, collection: Collection<TItem>) => TResult;
 export type Filter<TItem> = Enumerator<TItem, boolean>;
@@ -6,6 +6,8 @@ export type Remover<TItem> = Enumerator<TItem, boolean>;
 export type Replacer<TItem> = Enumerator<TItem, TItem>;
 export type Finder<TItem> = Enumerator<TItem, boolean>;
 export type Customiser<TItem, TResult> = Enumerator<TItem, TResult>;
+
+const SYMBOL = Symbol || { iterator: {} };
 
 export interface StringDictionary<TValue> {
     [key: string]: TValue;
@@ -33,10 +35,8 @@ export class Collection<TItem> {
     /**
      * Returning this in any enumerator will break the inner loop.
      */
-    @NonEnumerable
     public readonly BREAK = BREAK;
 
-    @NonEnumerable
     // tslint:disable-next-line:variable-name
     protected _firstIndex = 0;
 
@@ -44,7 +44,6 @@ export class Collection<TItem> {
         return this._firstIndex;
     }
 
-    @NonEnumerable
     // tslint:disable-next-line:variable-name
     protected _lastIndex = 0;
 
@@ -52,7 +51,6 @@ export class Collection<TItem> {
         return this._lastIndex;
     }
 
-    @NonEnumerable
     // tslint:disable-next-line:variable-name
     protected _count = 0;
 
@@ -69,6 +67,8 @@ export class Collection<TItem> {
                 this.append(enumerable[key]);
             });
         }
+
+        makeNonEnumerable(this, 'BREAK', '_firstIndex', '_lastIndex', '_count');
     }
 
     public append(...items: TItem[]): Collection<TItem> {
@@ -341,6 +341,14 @@ export class Collection<TItem> {
 
         return result;
     }
+
+    public *[SYMBOL.iterator]() {
+        const keys = Object.keys(this).map(key => +key);
+
+        for (const key of keys) {
+            yield <TItem>this[key];
+        }
+    }
 }
 
 const originalAppend = Collection.prototype.append;
@@ -350,10 +358,12 @@ function firstThenSwap<TItem>(instance: Collection<TItem>, items: TItem[], func:
     if (items.length > 0) {
         Object.defineProperties(instance, {
             append: {
-                value: originalAppend
+                value: originalAppend,
+                enumerable: false
             },
             prepend: {
-                value: originalPrepend
+                value: originalPrepend,
+                enumerable: false
             }
         });
 
@@ -373,12 +383,12 @@ function firstThenSwap<TItem>(instance: Collection<TItem>, items: TItem[], func:
 
 Object.defineProperties(Collection.prototype, {
     append: {
-        value: function firstThenSetPrepend<TItem>(this: Collection<TItem>, ...items: TItem[]): Collection<TItem> {
+        value: function append<TItem>(this: Collection<TItem>, ...items: TItem[]): Collection<TItem> {
             return firstThenSwap(this, items, 'append');
         }
     },
     prepend: {
-        value: function firstThenSetPrepend<TItem>(this: Collection<TItem>, ...items: TItem[]): Collection<TItem> {
+        value: function prepend<TItem>(this: Collection<TItem>, ...items: TItem[]): Collection<TItem> {
             return firstThenSwap(this, items, 'prepend');
         }
     }

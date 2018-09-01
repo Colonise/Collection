@@ -290,4 +290,19 @@ export class CollectionTests {
 
         Expect(actual).toEqual(expected);
     }
+
+    @TestCase(['a', 'b', 'c'], ['a', 'b', 'c'])
+    @Test('[Symbol.iterator]() should return an iterator')
+    public symbolIterator1<T, R>(items: T[], expected: T[]) {
+        const collection = new Collection<T>(items);
+
+        // tslint:disable-next-line:no-any
+        const actual = (<any>collection)[Symbol.iterator]();
+
+        expected.forEach(value => {
+            Expect(actual.next()).toEqual({ value, done: false });
+        });
+
+        Expect(actual.next()).toEqual({ value: undefined, done: true });
+    }
 }

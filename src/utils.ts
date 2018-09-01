@@ -1,7 +1,9 @@
-export function NonEnumerable<T>(target: T, propertyKey: string) {
-    Object.defineProperty(target, propertyKey, <PropertyDescriptor>{
-        configurable: true,
-        enumerable: false,
-        writable: true
+export function makeNonEnumerable<T>(instance: T, ...keys: string[]) {
+    keys.forEach(key => {
+        const descriptor = Object.getOwnPropertyDescriptor(instance, key) || {};
+
+        descriptor.enumerable = false;
+
+        Object.defineProperty(instance, key, descriptor);
     });
 }
