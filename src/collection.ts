@@ -176,6 +176,12 @@ export class Collection<TItem> {
         }
     }
 
+    public clear(): Collection<TItem> {
+        this.remove(() => true);
+
+        return this;
+    }
+
     public first(filter?: Filter<TItem>): TItem | undefined {
         const collection = this.filter(filter);
 

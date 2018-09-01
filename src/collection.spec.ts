@@ -128,6 +128,16 @@ export class CollectionTests {
         Expect(actual).toEqual(expected);
     }
 
+    @TestCase(['a', 'b', 'c'])
+    @Test('clear() should clear a collection of items')
+    public clear1<T>(items: T[]) {
+        const collection = new Collection<T>(items);
+
+        const actual = collection.clear();
+
+        Expect(actual).toEqual({});
+    }
+
     @TestCase([], undefined)
     @Test('first() should return the first item of a collection')
     public first1<T>(items: T[], expected: T) {
