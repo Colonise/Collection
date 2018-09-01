@@ -310,6 +310,20 @@ export class Collection<TItem> {
         return strict ? this.findLastIndexBy(item => item === toFind) : this.findLastIndexBy(item => item === toFind);
     }
 
+    public any(filter: Filter<TItem> = (item: TItem) => !!item): boolean {
+        let result = false;
+
+        this.enumerate((item, index, collection) => {
+            if (filter(item, index, collection)) {
+                result = true;
+
+                return this.BREAK;
+            }
+        });
+
+        return result;
+    }
+
     public toArray<TResult = TItem>(customiser?: Customiser<TItem, TResult>): TResult[] {
         const result: TResult[] = [];
 

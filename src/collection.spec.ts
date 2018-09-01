@@ -275,6 +275,30 @@ export class CollectionTests {
         Expect(actual).toEqual(expected);
     }
 
+    @TestCase(['a', 'b', 'c'], true)
+    @TestCase([0, 1, 2], true)
+    @TestCase([0, undefined, null, NaN, false, ''], false)
+    @Test('any() should should check if any items are truthy')
+    public any1<T>(items: T[], expected: boolean) {
+        const collection = new Collection<T>(items);
+
+        const actual = collection.any();
+
+        Expect(actual).toEqual(expected);
+    }
+
+    @TestCase(['a', 'b', 'c'], (value: string) => value === 'a', true)
+    @TestCase(['a', 'b', 'c'], (value: string) => value > 'a', true)
+    @TestCase(['a', 'b', 'c'], (value: string) => value > 'c', false)
+    @Test('any(filter) should should check if any items match the filter')
+    public any2<T>(items: T[], filter: Filter<T>, expected: boolean) {
+        const collection = new Collection<T>(items);
+
+        const actual = collection.any(filter);
+
+        Expect(actual).toEqual(expected);
+    }
+
     @TestCase(['a', 'b', 'c'], ['a', 'b', 'c'])
     @TestCase(['a', 'b', 'c'], ['a1', 'b1', 'c1'], (item: string) => `${item}1`)
     @Test('toArray() should return a new array version of a collection')
