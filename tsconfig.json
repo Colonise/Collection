@@ -14,7 +14,8 @@
         "strictPropertyInitialization": true,
         "importHelpers": true,
         "moduleResolution": "node",
-        "target": "es6"
+        "downlevelIteration": true,
+        "target": "es2015"
     },
     "include": ["gulpfile.ts"]
 }

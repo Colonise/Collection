@@ -7,7 +7,13 @@ export type Replacer<TItem> = Enumerator<TItem, TItem>;
 export type Finder<TItem> = Enumerator<TItem, boolean>;
 export type Customiser<TItem, TResult> = Enumerator<TItem, TResult>;
 
-const SYMBOL = Symbol || { iterator: {} };
+if (!Symbol) {
+    Symbol = <SymbolConstructor>{};
+}
+
+if (!Symbol.iterator) {
+    (<{ iterator: symbol }>Symbol).iterator = <symbol>{};
+}
 
 export interface StringDictionary<TValue> {
     [key: string]: TValue;
@@ -27,6 +33,7 @@ const BREAK: any = {};
 
 export class Collection<TItem> {
     [index: number]: TItem | undefined;
+    // public [Symbol.iterator]: Function;
 
     /**
      * Returning this in any enumerator will break the inner loop.
@@ -376,7 +383,11 @@ export class Collection<TItem> {
         return result;
     }
 
-    public *[SYMBOL.iterator]() {
+    public [Symbol.iterator](): IterableIterator<TItem> {
+        return this.getIterator();
+    }
+
+    private *getIterator() {
         const keys = Object.keys(this).map(key => +key);
 
         for (const key of keys) {
