@@ -1,5 +1,12 @@
 Changelog
 
+## [1.2.1](https://github.com/Colonise/Collection/compare/v1.2.0...v1.2.1) (2018-10-21)
+
+
+### Bug Fixes
+
+* **@@Iterator:** enable downlevel iteration and improve typings ([10b7956](https://github.com/Colonise/Collection/commit/10b7956))
+
 # [1.2.0](https://github.com/Colonise/Collection/compare/v1.1.0...v1.2.0) (2018-09-01)
 
 
