@@ -1,6 +1,7 @@
 import { makeNonEnumerable } from './utils';
 
 export type Enumerator<TItem, TResult> = (item: TItem, index: number, collection: Collection<TItem>) => TResult;
+export type Checker<TItem> = Enumerator<TItem, boolean>;
 export type Filter<TItem> = Enumerator<TItem, boolean>;
 export type Remover<TItem> = Enumerator<TItem, boolean>;
 export type Replacer<TItem> = Enumerator<TItem, TItem>;
@@ -102,49 +103,47 @@ export class Collection<TItem> {
 
     public remove(item: TItem): Collection<TItem>;
     public remove(remover: Remover<TItem>): Collection<TItem>;
-    public remove(index: number, count?: number): Collection<TItem>;
-    public remove(indexOrItemOrRemover: number | TItem | Remover<TItem>, count?: number): Collection<TItem> {
-        if (typeof indexOrItemOrRemover === 'number') {
-            if (typeof count === 'number') {
-                let times = count;
-
-                this.enumerate((item, index) => {
-                    this.remove(index);
-
-                    if (times-- === 0) {
-                        return BREAK;
-                    }
-                });
-            } else {
-                delete this[indexOrItemOrRemover];
-
-                if (indexOrItemOrRemover === this.firstIndex) {
-                    this._firstIndex += 1;
-                } else if (indexOrItemOrRemover === this.lastIndex) {
-                    this._lastIndex -= 1;
-                }
-
-                this._count -= 1;
-            }
-        } else if (typeof indexOrItemOrRemover === 'function') {
+    public remove(itemOrRemover: TItem | Remover<TItem>): Collection<TItem> {
+        if (typeof itemOrRemover === 'function') {
             this.enumerate((item, index, collection) => {
-                if (indexOrItemOrRemover(item, index, collection)) {
-                    this.remove(index);
+                if (itemOrRemover(item, index, collection)) {
+                    this.delete(index);
                 }
             });
         } else {
-            const index = this.findIndex(indexOrItemOrRemover);
+            const index = this.findIndex(itemOrRemover);
 
             if (index !== undefined) {
-                this.remove(index);
+                this.delete(index);
             }
         }
 
         return this;
     }
 
+    public delete(index: number): Collection<TItem>;
+    public delete(index: number, count: number): Collection<TItem>;
+    public delete(index: number, count?: number): Collection<TItem> {
+        if (typeof count === 'number') {
+            let times = count;
+
+            this.enumerateFromWhile(index, () => times-- > 0, (item, i) => this.delete(i));
+        } else {
+            delete this[index];
+
+            if (index === this.firstIndex) {
+                this._firstIndex += 1;
+            } else if (index === this.lastIndex) {
+                this._lastIndex -= 1;
+            }
+
+            this._count -= 1;
+        }
+
+        return this;
+    }
+
     public replace(item: TItem, replacement: TItem): Collection<TItem>;
-    public replace(index: number, replacement: TItem): Collection<TItem>;
     public replace(replacer: Replacer<TItem>): Collection<TItem>;
     public replace(
         indexOrItemOrReplacer: TItem | number | Replacer<TItem>,
@@ -160,7 +159,7 @@ export class Collection<TItem> {
             const index = this.findIndex(indexOrItemOrReplacer);
 
             if (index !== undefined) {
-                this.replace(index, <TItem>replacementOrUndefined);
+                this[index] = <TItem>replacementOrUndefined;
             }
         }
 
@@ -217,8 +216,8 @@ export class Collection<TItem> {
         }
     }
 
-    public enumerate(enumerator: Enumerator<TItem, void>): void {
-        for (let index = this.firstIndex; index <= this.lastIndex; index++) {
+    public enumerateBetween(firstIndex: number, lastIndex: number, enumerator: Enumerator<TItem, void>): void {
+        for (let index = firstIndex; index <= lastIndex; index++) {
             if (index in this) {
                 // tslint:disable-next-line:no-void-expression
                 const result = enumerator(<TItem>this[index], index, this);
@@ -230,8 +229,47 @@ export class Collection<TItem> {
         }
     }
 
-    public enumerateReverse(enumerator: Enumerator<TItem, void>): void {
-        for (let index = this.lastIndex; index >= this.firstIndex; index--) {
+    public enumerateFrom(firstIndex: number, enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetween(firstIndex, this.lastIndex, enumerator);
+    }
+
+    public enumerateTo(lastIndex: number, enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetween(this.firstIndex, lastIndex, enumerator);
+    }
+
+    public enumerate(enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetween(this.firstIndex, this.lastIndex, enumerator);
+    }
+
+    public enumerateBetweenWhile(
+        firstIndex: number,
+        lastIndex: number,
+        checker: Checker<TItem>,
+        enumerator: Enumerator<TItem, void>
+    ): void {
+        this.enumerateBetween(firstIndex, lastIndex, (item, index, collection) => {
+            if (checker(item, index, collection)) {
+                enumerator(item, index, collection);
+            } else {
+                return BREAK;
+            }
+        });
+    }
+
+    public enumerateFromWhile(firstIndex: number, checker: Checker<TItem>, enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetweenWhile(firstIndex, this.lastIndex, checker, enumerator);
+    }
+
+    public enumerateToWhile(lastIndex: number, checker: Checker<TItem>, enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetweenWhile(this.firstIndex, lastIndex, checker, enumerator);
+    }
+
+    public enumerateWhile(checker: Checker<TItem>, enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetweenWhile(this.firstIndex, this.lastIndex, checker, enumerator);
+    }
+
+    public enumerateBetweenReverse(lastIndex: number, firstIndex: number, enumerator: Enumerator<TItem, void>) {
+        for (let index = lastIndex; index >= firstIndex; index--) {
             if (index in this) {
                 // tslint:disable-next-line:no-void-expression
                 const result = enumerator(<TItem>this[index], index, this);
@@ -241,6 +279,53 @@ export class Collection<TItem> {
                 }
             }
         }
+    }
+
+    public enumerateFromReverse(lastIndex: number, enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetweenReverse(lastIndex, this.firstIndex, enumerator);
+    }
+
+    public enumerateToReverse(firstIndex: number, enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetweenReverse(this.lastIndex, firstIndex, enumerator);
+    }
+
+    public enumerateReverse(enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetweenReverse(this.lastIndex, this.firstIndex, enumerator);
+    }
+
+    public enumerateBetweenReverseWhile(
+        lastIndex: number,
+        firstIndex: number,
+        checker: Checker<TItem>,
+        enumerator: Enumerator<TItem, void>
+    ): void {
+        this.enumerateBetweenReverse(lastIndex, firstIndex, (item, index, collection) => {
+            if (checker(item, index, collection)) {
+                enumerator(item, index, collection);
+            } else {
+                return BREAK;
+            }
+        });
+    }
+
+    public enumerateFromReverseWhile(
+        lastIndex: number,
+        checker: Checker<TItem>,
+        enumerator: Enumerator<TItem, void>
+    ): void {
+        this.enumerateBetweenReverseWhile(this.firstIndex, lastIndex, checker, enumerator);
+    }
+
+    public enumerateToReverseWhile(
+        firstIndex: number,
+        checker: Checker<TItem>,
+        enumerator: Enumerator<TItem, void>
+    ): void {
+        this.enumerateBetweenReverseWhile(firstIndex, this.lastIndex, checker, enumerator);
+    }
+
+    public enumerateReverseWhile(checker: Checker<TItem>, enumerator: Enumerator<TItem, void>): void {
+        this.enumerateBetweenReverseWhile(this.lastIndex, this.firstIndex, checker, enumerator);
     }
 
     public find(finder: Finder<TItem>): TItem | undefined {
@@ -384,14 +469,14 @@ export class Collection<TItem> {
     }
 
     public [Symbol.iterator](): IterableIterator<TItem> {
-        return this.getIterator();
+        return this.iterator();
     }
 
-    private *getIterator() {
-        const keys = Object.keys(this).map(key => +key);
-
-        for (const key of keys) {
-            yield <TItem>this[key];
+    public *iterator() {
+        for (let index = this.firstIndex; index <= this.lastIndex; index++) {
+            if (index in this) {
+                yield <TItem>this[index];
+            }
         }
     }
 }
