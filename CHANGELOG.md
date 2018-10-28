@@ -1,5 +1,12 @@
 Changelog
 
+# [1.3.0](https://github.com/Colonise/Collection/compare/v1.2.1...v1.3.0) (2018-10-22)
+
+
+### Features
+
+* enumerate to, from, between, while, + reverse ([013830e](https://github.com/Colonise/Collection/commit/013830e))
+
 ## [1.2.1](https://github.com/Colonise/Collection/compare/v1.2.0...v1.2.1) (2018-10-21)
 
 
