@@ -23,7 +23,7 @@ function createTestingCollection<T>(definition: Dictionary<T>, firstIndex?: numb
 export class CollectionTests {
     @TestCase([], new Collection())
     @Test('should be constructed with default values')
-    public construct1<T>(items: T[], expected: Collection<T>) {
+    public construct1<T>(items: T[]) {
         const collection = new Collection(items);
 
         Expect(collection).toBeDefined();
@@ -125,7 +125,7 @@ export class CollectionTests {
     @TestCase(
         ['a', 'b', 'c', 'd', 'e'],
         createTestingCollection({ '0': 'f', '1': 'f', '2': 'f', '3': 'f', '4': 'f' }),
-        (item: string) => 'f'
+        () => 'f'
     )
     @Test('replace(filter: Filter<TItem>) should replace all items in a collection using a replacer')
     public replace3<T>(items: T[], expected: Collection<T>, replacer: Replacer<T>) {

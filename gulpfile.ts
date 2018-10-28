@@ -17,7 +17,7 @@ enum TestOutput {
 }
 
 @TSGulp.Project('Collection')
-class GulpFile {
+export class GulpFile {
     public readonly tsProject = typescript.createProject('./src/tsconfig.json');
     public readonly tsLintProgram = TSlint.Linter.createProgram('./src/tsconfig.json');
 

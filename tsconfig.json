@@ -1,20 +1,22 @@
 {
     "compilerOptions": {
         "alwaysStrict": true,
+        "declaration": true,
+        "downlevelIteration": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
+        "importHelpers": true,
         "module": "commonjs",
+        "moduleResolution": "node",
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "strict": true,
         "strictFunctionTypes": true,
         "strictNullChecks": true,
-        "declaration": true,
         "strictPropertyInitialization": true,
-        "importHelpers": true,
-        "moduleResolution": "node",
-        "downlevelIteration": true,
         "target": "es2015"
     },
     "include": ["gulpfile.ts"]

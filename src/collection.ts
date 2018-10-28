@@ -8,10 +8,12 @@ export type Replacer<TItem> = Enumerator<TItem, TItem>;
 export type Finder<TItem> = Enumerator<TItem, boolean>;
 export type Customiser<TItem, TResult> = Enumerator<TItem, TResult>;
 
+// Symbol polyfill
 if (!Symbol) {
     Symbol = <SymbolConstructor>{};
 }
 
+// Symbol.iterator polyfill
 if (!Symbol.iterator) {
     (<{ iterator: symbol }>Symbol).iterator = <symbol>{};
 }
@@ -106,7 +108,7 @@ export class Collection<TItem> {
     public remove(itemOrRemover: TItem | Remover<TItem>): Collection<TItem> {
         if (typeof itemOrRemover === 'function') {
             this.enumerate((item, index, collection) => {
-                if (itemOrRemover(item, index, collection)) {
+                if ((<Remover<TItem>>itemOrRemover)(item, index, collection)) {
                     this.delete(index);
                 }
             });
@@ -127,6 +129,7 @@ export class Collection<TItem> {
         if (typeof count === 'number') {
             let times = count;
 
+            // @ts-ignore: Allow unused paramater
             this.enumerateFromWhile(index, () => times-- > 0, (item, i) => this.delete(i));
         } else {
             delete this[index];
@@ -145,18 +148,13 @@ export class Collection<TItem> {
 
     public replace(item: TItem, replacement: TItem): Collection<TItem>;
     public replace(replacer: Replacer<TItem>): Collection<TItem>;
-    public replace(
-        indexOrItemOrReplacer: TItem | number | Replacer<TItem>,
-        replacementOrUndefined?: TItem
-    ): Collection<TItem> {
-        if (typeof indexOrItemOrReplacer === 'number') {
-            this[indexOrItemOrReplacer] = replacementOrUndefined;
-        } else if (typeof indexOrItemOrReplacer === 'function') {
+    public replace(itemOrReplacer: TItem | Replacer<TItem>, replacementOrUndefined?: TItem): Collection<TItem> {
+        if (typeof itemOrReplacer === 'function') {
             this.enumerate((item, index, collection) => {
-                this[index] = indexOrItemOrReplacer(item, index, collection);
+                this[index] = (<Replacer<TItem>>itemOrReplacer)(item, index, collection);
             });
         } else {
-            const index = this.findIndex(indexOrItemOrReplacer);
+            const index = this.findIndex(itemOrReplacer);
 
             if (index !== undefined) {
                 this[index] = <TItem>replacementOrUndefined;
@@ -191,6 +189,7 @@ export class Collection<TItem> {
     public first(filter?: Filter<TItem>): TItem | undefined {
         const collection = this.filter(filter);
 
+        // @ts-ignore: Allow unused paramater
         return collection.find((item, index) => {
             return index in collection;
         });
@@ -199,6 +198,7 @@ export class Collection<TItem> {
     public last(filter?: Filter<TItem>): TItem | undefined {
         const collection = this.filter(filter);
 
+        // @ts-ignore: Allow unused paramater
         return collection.findLast((item, index) => {
             return index in collection;
         });
