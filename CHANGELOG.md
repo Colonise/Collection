@@ -1,5 +1,17 @@
 Changelog
 
+# [2.0.0](https://github.com/Colonise/Collection/compare/v1.3.0...v2.0.0) (2018-10-28)
+
+
+### Features
+
+* upgrade TypeScript version to 3.1.3 ([8e406d8](https://github.com/Colonise/Collection/commit/8e406d8))
+
+
+### BREAKING CHANGES
+
+* TypeScript version 2.7.2 changed to 3.1.3
+
 # [1.3.0](https://github.com/Colonise/Collection/compare/v1.2.1...v1.3.0) (2018-10-22)
 
 
