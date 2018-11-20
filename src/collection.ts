@@ -1,11 +1,11 @@
 import { makeNonEnumerable } from './utils';
 
 export type Enumerator<TItem, TResult> = (item: TItem, index: number, collection: Collection<TItem>) => TResult;
-export type Checker<TItem> = Enumerator<TItem, boolean>;
-export type Filter<TItem> = Enumerator<TItem, boolean>;
-export type Remover<TItem> = Enumerator<TItem, boolean>;
+export type Checker<TItem> = Enumerator<TItem, unknown>;
+export type Filter<TItem> = Enumerator<TItem, unknown>;
+export type Remover<TItem> = Enumerator<TItem, unknown>;
 export type Replacer<TItem> = Enumerator<TItem, TItem>;
-export type Finder<TItem> = Enumerator<TItem, boolean>;
+export type Finder<TItem> = Enumerator<TItem, unknown>;
 export type Customiser<TItem, TResult> = Enumerator<TItem, TResult>;
 
 // Symbol polyfill
