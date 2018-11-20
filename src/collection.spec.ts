@@ -128,10 +128,10 @@ export class CollectionTests {
         () => 'f'
     )
     @Test('replace(filter: Filter<TItem>) should replace all items in a collection using a replacer')
-    public replace3<T>(items: T[], expected: Collection<T>, replacer: Replacer<T>) {
+    public replaceBy1<T>(items: T[], expected: Collection<T>, replacer: Replacer<T>) {
         const collection = new Collection<T>(items);
 
-        collection.replace(replacer);
+        collection.replaceBy(replacer);
 
         Expect(collection).toEqual(expected);
     }

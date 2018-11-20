@@ -146,20 +146,20 @@ export class Collection<TItem> {
         return this;
     }
 
-    public replace(item: TItem, replacement: TItem): Collection<TItem>;
-    public replace(replacer: Replacer<TItem>): Collection<TItem>;
-    public replace(itemOrReplacer: TItem | Replacer<TItem>, replacementOrUndefined?: TItem): Collection<TItem> {
-        if (typeof itemOrReplacer === 'function') {
-            this.enumerate((item, index, collection) => {
-                this[index] = (<Replacer<TItem>>itemOrReplacer)(item, index, collection);
-            });
-        } else {
-            const index = this.findIndex(itemOrReplacer);
+    public replace(item: TItem, replacement: TItem): Collection<TItem> {
+        const index = this.findIndex(item);
 
-            if (index !== undefined) {
-                this[index] = <TItem>replacementOrUndefined;
-            }
+        if (index !== undefined) {
+            this[index] = replacement;
         }
+
+        return this;
+    }
+
+    public replaceBy(replacer: Replacer<TItem>): Collection<TItem> {
+        this.enumerate((item, index, collection) => {
+            this[index] = replacer(item, index, collection);
+        });
 
         return this;
     }
