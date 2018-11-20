@@ -103,22 +103,22 @@ export class Collection<TItem> {
         return this;
     }
 
-    public remove(item: TItem): Collection<TItem>;
-    public remove(remover: Remover<TItem>): Collection<TItem>;
-    public remove(itemOrRemover: TItem | Remover<TItem>): Collection<TItem> {
-        if (typeof itemOrRemover === 'function') {
-            this.enumerate((item, index, collection) => {
-                if ((<Remover<TItem>>itemOrRemover)(item, index, collection)) {
-                    this.delete(index);
-                }
-            });
-        } else {
-            const index = this.findIndex(itemOrRemover);
+    public remove(item: TItem): Collection<TItem> {
+        const index = this.findIndex(item);
 
-            if (index !== undefined) {
+        if (index !== undefined) {
+            this.delete(index);
+        }
+
+        return this;
+    }
+
+    public removeBy(remover: Remover<TItem>): Collection<TItem> {
+        this.enumerate((item, index, collection) => {
+            if (remover(item, index, collection)) {
                 this.delete(index);
             }
-        }
+        });
 
         return this;
     }
@@ -181,7 +181,7 @@ export class Collection<TItem> {
     }
 
     public clear(): Collection<TItem> {
-        this.remove(() => true);
+        this.removeBy(() => true);
 
         return this;
     }

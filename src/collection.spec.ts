@@ -1,6 +1,6 @@
 import { Any, createFunctionSpy, Expect, Test, TestCase, TestFixture } from 'alsatian';
 import { Customiser, Filter } from './';
-import { Collection, Dictionary, Finder, Replacer } from './collection';
+import { Collection, Dictionary, Finder, Remover, Replacer } from './collection';
 
 function createTestingCollection<T>(definition: Dictionary<T>, firstIndex?: number, lastIndex?: number) {
     const collection = new Collection();
@@ -76,11 +76,11 @@ export class CollectionTests {
         createTestingCollection({ '1': 'b', '2': 'c', '3': 'd', '4': 'e' }),
         (item: string) => item === 'a'
     )
-    @Test('remove(filter: Filter<TItem>) should remove items that the filter returns true to from a collection')
-    public remove2<T>(items: T[], expected: Collection<T>, filter: Filter<T>) {
+    @Test('removeBy(remover: Remover<TItem>) should remove items that the filter returns true to from a collection')
+    public removeBy1<T>(items: T[], expected: Collection<T>, remover: Remover<T>) {
         const collection = new Collection<T>(items);
 
-        collection.remove(filter);
+        collection.removeBy(remover);
 
         Expect(collection).toEqual(expected);
     }
