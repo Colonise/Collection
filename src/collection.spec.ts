@@ -1,6 +1,6 @@
 import { Any, createFunctionSpy, Expect, Test, TestCase, TestFixture } from 'alsatian';
 import { Customiser, Filter } from './';
-import { Collection, Dictionary, Finder, Mapper, Remover, Replacer } from './collection';
+import { Collection, Dictionary, Finder, Mapper, Remover, Replacer, Transformer } from './collection';
 
 function createTestingCollection<T>(definition: Dictionary<T>, firstIndex?: number, lastIndex?: number) {
     const collection = new Collection();
@@ -142,12 +142,26 @@ export class CollectionTests {
         <T>(v: T) => `"${v}"`
     )
     @Test('replace(filter: Filter<TItem>) should replace all items in a collection using a replacer')
-    public map1<T, R>(items: T[], expected: Collection<T>, mapper: Mapper<T, R>) {
+    public map1<T, R>(items: T[], expected: Collection<R>, mapper: Mapper<T, R>) {
         const collection = new Collection<T>(items);
 
         const actual = collection.map(mapper);
 
         Expect(actual).toEqual(expected);
+    }
+
+    @TestCase(
+        ['a', 'b', 'c', 'd', 'e'],
+        createTestingCollection({ '0': '"a"', '1': '"b"', '2': '"c"', '3': '"d"', '4': '"e"' }),
+        <T>(v: T) => `"${v}"`
+    )
+    @Test('replace(filter: Filter<TItem>) should replace all items in a collection using a replacer')
+    public transform1<T, R>(items: T[], expected: Collection<R>, transformer: Transformer<T, R>) {
+        const collection = new Collection<T>(items);
+
+        collection.transform(transformer);
+
+        Expect(collection).toEqual(expected);
     }
 
     @TestCase(

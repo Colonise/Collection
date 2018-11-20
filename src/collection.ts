@@ -7,6 +7,7 @@ export type Remover<TItem> = Enumerator<TItem, unknown>;
 export type Replacer<TItem> = Enumerator<TItem, TItem>;
 export type Finder<TItem> = Enumerator<TItem, unknown>;
 export type Mapper<TItem, TResult> = Enumerator<TItem, TResult>;
+export type Transformer<TItem, TResult> = Enumerator<TItem, TResult>;
 export type Customiser<TItem, TResult> = Enumerator<TItem, TResult>;
 
 // Symbol polyfill
@@ -173,6 +174,16 @@ export class Collection<TItem> {
         });
 
         return mappedCollection;
+    }
+
+    public transform<TResult>(transformer: Transformer<TItem, TResult>): Collection<TResult> {
+        const newThis = <Collection<TResult>>(<unknown>this);
+
+        this.enumerate((item, index, collection) => {
+            newThis[index] = transformer(item, index, collection);
+        });
+
+        return newThis;
     }
 
     public filter(filter?: Filter<TItem>): Collection<TItem> {
