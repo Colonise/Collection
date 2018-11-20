@@ -6,7 +6,7 @@ Changelog
 ### Bug Fixes
 
 * **remove:** replace remove(remover) with removeBy(remover) ([7d5db88](https://github.com/Colonise/Collection/commit/7d5db88))
-* **replay:** replace replace(replacer) with replaceBy(replacer) ([8962305](https://github.com/Colonise/Collection/commit/8962305))
+* **replace:** replace replace(replacer) with replaceBy(replacer) ([8962305](https://github.com/Colonise/Collection/commit/8962305))
 * allow checker, filter, remover, and finder to return truthy/falsey ([f6a8177](https://github.com/Colonise/Collection/commit/f6a8177))
 
 # [2.0.0](https://github.com/Colonise/Collection/compare/v1.3.0...v2.0.0) (2018-10-28)
