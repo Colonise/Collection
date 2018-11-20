@@ -1,5 +1,13 @@
 Changelog
 
+# [2.1.0](https://github.com/Colonise/Collection/compare/v2.0.1...v2.1.0) (2018-11-20)
+
+
+### Features
+
+* **map:** add map(mapper) that creates a new mapped collection ([94c9dfe](https://github.com/Colonise/Collection/commit/94c9dfe))
+* **transform:** add transform(transformer) to transform the collection ([5f4f443](https://github.com/Colonise/Collection/commit/5f4f443))
+
 ## [2.0.1](https://github.com/Colonise/Collection/compare/v2.0.0...v2.0.1) (2018-11-20)
 
 
